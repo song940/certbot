@@ -83,7 +83,7 @@ function createRootCA({ subject = issuer, keys = createKeypair(), ...options } =
  * @param {*} param0 
  * @returns 
  */
-const createCertificate = ({ hostname, ca, ...options }) => {
+const createCertificate = ({ hostname = 'certman.local', ca = createRootCA(), ...options }) => {
   let { key: rootKey, cert: rootCert } = ca;
   if (typeof rootKey === 'string')
     rootKey = pki.privateKeyFromPem(rootKey);

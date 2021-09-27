@@ -3,11 +3,10 @@
 const { writeFileSync } = require('fs');
 const { createRootCA, createCertificate } = require('..');
 
-const [hostname] = process.argv.slice(2);
+const [hostname = 'certman.local'] = process.argv.slice(2);
 
 (() => {
-  const ca = createRootCA();
-  const cert = createCertificate({ ca, hostname });
+  const cert = createCertificate({ hostname });
   writeFileSync(`./${hostname}.cert`, cert.cert);
   writeFileSync(`./${hostname}.key`, cert.key);
 })();
