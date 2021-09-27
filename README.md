@@ -6,6 +6,13 @@
 ~$ npm i certman --save
 ```
 
+### CLI Usage
+
+```sh
+~$ npm i -g certman
+~$ cerman myhostname.local
+```
+
 ### Example
 
 ```js
