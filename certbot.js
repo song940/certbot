@@ -52,8 +52,12 @@ function createCert({ publicKey, subject = issuer, extensions = [], days = 365 }
  * @param {*} param0 
  * @returns 
  */
-function createRootCA({ subject = issuer, ...options } = {}) {
-  const { publicKey, privateKey } = createKeypair();
+function createRootCA({ subject = issuer, keys = createKeypair(), ...options } = {}) {
+  let { publicKey, privateKey } = keys;
+  if (typeof publicKey === 'string')
+    publicKey = pki.publicKeyFromPem(publicKey);
+  if (typeof privateKey === 'string')
+    privateKey = pki.privateKeyFromPem(privateKey);
   const cert = createCert({
     publicKey,
     subject,
@@ -67,10 +71,10 @@ function createRootCA({ subject = issuer, ...options } = {}) {
   });
   cert.sign(privateKey, sha256.create());
   return {
-    cert,
-    publicKey,
-    privateKey,
-    key: privateKey,
+    cert: pki.certificateToPem(cert),
+    key: pki.privateKeyToPem(privateKey),
+    publicKey: pki.publicKeyToPem(publicKey),
+    privateKey: pki.privateKeyToPem(privateKey),
   };
 };
 
@@ -80,7 +84,11 @@ function createRootCA({ subject = issuer, ...options } = {}) {
  * @returns 
  */
 const createCertificate = ({ hostname, ca, ...options }) => {
-  const { key: rootKey, cert: rootCert } = ca;
+  let { key: rootKey, cert: rootCert } = ca;
+  if (typeof rootKey === 'string')
+    rootKey = pki.privateKeyFromPem(rootKey);
+  if (typeof rootCert === 'string')
+    rootCert = pki.certificateFromPem(rootCert);
   const publicKey = pki.setRsaPublicKey(rootKey.n, rootKey.e);
   const cert = createCert({
     publicKey,
@@ -111,7 +119,7 @@ const createCertificate = ({ hostname, ca, ...options }) => {
 };
 
 // pki.privateKeyToPem(privateKey),
-// pki.publicKeyFromPem(publicKey),
+// pki.publicKeyToPem(publicKey),
 // pki.certificateToPem(cert),
 
 // pki.privateKeyFromPem(privateKey);

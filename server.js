@@ -8,9 +8,6 @@ const Router = require('kelp-router');
 
 const { createRootCA, createCertificate } = require('./certbot');
 
-const ca = createRootCA();
-const cert = createCertificate({ ca, hostname: 'certman.lsong.org' });
-
 const app = kelp();
 
 const router = new Router();
@@ -21,11 +18,48 @@ app.use(logger);
 app.use(router);
 
 router.get('/', (req, res) => {
-    res.send('hello world!');
+  res.send('hello world!');
+});
+
+router.post('/create-ca', (req, res) => {
+  const {
+    commonName, countryName, ST,
+    localityName, organizationName, OU
+  } = req.body;
+  const subject = [];
+
+  if (commonName) subject.push({
+    name: 'commonName',
+    value: commonName
+  });
+
+
+  if (countryName) subject.push({
+    name: 'countryName',
+    value: countryName
+  });
+
+  if (ST) subject.push({
+    shortName: 'ST',
+    value: ST
+  });
+
+  if (localityName) subject.push({
+    name: 'localityName',
+    value: localityName
+  });
+
+  if (organizationName) subject.push({
+    name: 'organizationName',
+    value: organizationName
+  });
+
+  if (OU) subject.push({
+    shortName: 'OU',
+    value: OU
+  });
+
+  const ca = createRootCA({ subject });
 });
 
 http.createServer(app).listen(3000);
-https.createServer({
-    key: cert.key,
-    cert: cert.cert,
-}, app).listen(6443);

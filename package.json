@@ -1,6 +1,6 @@
 {
   "name": "certman",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "certman",
   "main": "certbot.js",
   "bin": "./bin/certman.js",
